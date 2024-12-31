@@ -96,5 +96,4 @@ class ApiManager:
         result = "\n".join(message)
         return result
 
-api_manager = ApiManager()
-print(api_manager.get_15_days_data())
+# api_manager = ApiManager()
