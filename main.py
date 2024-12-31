@@ -1,11 +1,15 @@
 from bot_manager import Messenger
 from flask import Flask
+from threading import Thread
 
 app = Flask(__name__)
 
+bot = Messenger()
+Thread(target=bot.run).start()
+
+
 @app.route("/")
 def home():
-    bot = Messenger()
     return "Bot is running."
 
 if __name__ == "__main__":

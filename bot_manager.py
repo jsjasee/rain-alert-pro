@@ -20,6 +20,11 @@ class Messenger:
         self.bot.message_handler(commands=['specified_forecast'])(self.specified_forecast)
         self.bot.message_handler(func=self.check_condition)(self.send_specified_forecast)
         self.bot.message_handler(commands=['fifteen_days_forecast'])(self.fifteen_days_forecast)
+        # self.bot.polling()
+        # this polling will block Flask because both Flask (serving your web app) and bot.polling() (listening for Telegram updates)
+        # run in the same thread by default unless you explicitly use threading. Hence the polling must be run on a separate thread for webapp to run successfully.
+
+    def run(self):
         self.bot.polling()
 
     def send_message(self, msg):
