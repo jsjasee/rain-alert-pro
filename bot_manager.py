@@ -31,6 +31,7 @@ class Messenger():
         self.bot.send_message(chat_id=msg.chat.id, text=msg)
 
     def say_hello(self, message):
+        print(f"Handler triggered for /start: Chat ID = {message.chat.id}")  # Add logging
         # Key Takeaway
         # The message argument is required because Telebot always passes the incoming message object to the handler.
         # Even if you don’t use it, you must include it in the
