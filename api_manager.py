@@ -48,7 +48,9 @@ class ApiManager:
     def get_rain_prob_data(self):
         self.current_time = dt.datetime.now()
         self.get_data()
-        hours_today = self.data["days"][0]["hours"]
+        all_days = self.data["days"]
+        current_day = all_days[0]
+        hours_today = current_day["hours"]
 
         precip_prob = [hour_dict["precipprob"] for hour_dict in hours_today if self.current_time.hour == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 1 == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 2 == int(hour_dict["datetime"].split(":")[0])]
         # print(precip_prob)
