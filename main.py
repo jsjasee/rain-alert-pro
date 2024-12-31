@@ -18,6 +18,11 @@ def webhook():
     bot.process_new_updates([update])
     return "OK", 200
 
+# Add a route for the root URL
+@app.route("/")
+def home():
+    return "Welcome to the Rain Alert Bot! This bot uses webhooks to receive updates. Rain Alert Bot executed successfully."
+
 # Set the webhook when the app starts
 if __name__ == "__main__":
     bot.remove_webhook()  # Clear any existing webhook
