@@ -8,6 +8,19 @@ API_KEY = os.getenv("API_KEY")
 LAT = os.getenv("LAT")
 LONG = os.getenv("LONG")
 
+def add_emojis(message):
+    possible_weather_conditions = {
+        "cloudy": "⛅",
+        "overcast": "☁️",
+        "rain": "🌧️",
+        "thunder": "⚡️",
+        "storm": "⛈️",
+    }
+    for weather in possible_weather_conditions:
+        if weather in message.lower():
+            message += possible_weather_conditions[weather]
+    return message
+
 class ApiManager:
     def __init__(self):
 
@@ -23,7 +36,6 @@ class ApiManager:
 
         self.data = self.get_data()
 
-
     def get_data(self):
         """Updates the data again."""
         response = requests.get(
@@ -35,7 +47,6 @@ class ApiManager:
 
     def get_rain_prob_data(self):
         self.current_time = dt.datetime.now()
-        self.current_time_formatted = str(self.current_time).split(" ")[0] + "T" + str(self.current_time).split(" ")[1]
         self.get_data()
         hours_today = self.data["days"][0]["hours"]
 
@@ -53,37 +64,37 @@ class ApiManager:
         self.get_data()
         condition_today = self.data["days"][0]["conditions"]
         desc_today = self.data["days"][0]["description"]
-        return f"Today's weather: {condition_today}. {desc_today}"
+        return f"Today's weather: {add_emojis(condition_today)}. {add_emojis(desc_today)}"
 
     def get_hourly_forecast_data(self):
         self.get_data()
         hrly_weather_tdy_list = self.data["days"][0]["hours"]
-        message = [f"{hour['datetime']}: {hour['conditions']}" for hour in hrly_weather_tdy_list]
-        message_result = "\n".join(message)
+        messages = [f"{hour['datetime']}: {hour['conditions']}" for hour in hrly_weather_tdy_list]
+        emoji_messages = [add_emojis(message) for message in messages]
+        message_result = "\n".join(emoji_messages)
         return message_result
 
     def get_chosen_date_data(self, user_input_date):
         """only works for a 15 day period starting from current date. user_input_date must follow the format YYYY-MM-DD"""
         self.chosen_time_formatted = user_input_date
         self.get_data()
-        match = False
+
         for day in self.data['days']:
             if day['datetime'] == user_input_date:
-                match = True
-                message = [f"{hour['datetime']}: {hour['conditions']}" for hour in day['hours']]
-                message_result = "\n".join(message)
-                overall_result = f"Overall condition: {day['conditions']}\nDescription: {day['description']}\n"
+                messages = [f"{hour['datetime']}: {hour['conditions']}" for hour in day['hours']]
+                emoji_messages = [add_emojis(message) for message in messages]
+                message_result = "\n".join(emoji_messages)
+                overall_result = f"Overall condition: {add_emojis(day['conditions'])}\nDescription: {add_emojis(day['description'])}\n"
                 return overall_result + message_result
-        if not match:
-            return ("No match found. Date must be within 15 day period starting from today. "
-                    "Try re-entering date using the specified format of YYYY-MM-DD")
+        return ("No match found. Date must be within 15 day period starting from today. "
+                "Try re-entering date using the specified format of YYYY-MM-DD")
 
     def get_15_days_data(self):
         self.params["include"] = "days"
         self.get_data()
-        message = [f"{day['datetime']}: {day['conditions']}. {day['description']}" for day in self.data['days']]
+        message = [f"{add_emojis(day['datetime'])}: {add_emojis(day['conditions'])}. {add_emojis(day['description'])}" for day in self.data['days']]
         result = "\n".join(message)
         return result
 
-# api_manager = ApiManager()
-# 2024-12-30
+api_manager = ApiManager()
+print(api_manager.get_15_days_data())
