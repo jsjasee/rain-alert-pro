@@ -8,7 +8,7 @@ TOKEN = os.getenv("TOKEN")
 
 api_manager = ApiManager()
 
-class Messenger:
+class Messenger():
     def __init__(self):
         self.bot = TeleBot(token=TOKEN)
         self.user_states = {}
