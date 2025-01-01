@@ -1,3 +1,4 @@
+import pytz
 import requests
 import datetime as dt
 import os
@@ -7,6 +8,7 @@ load_dotenv() # this must be called before using os.getenv()
 API_KEY = os.getenv("API_KEY")
 LAT = os.getenv("LAT")
 LONG = os.getenv("LONG")
+SINGAPORE_TZ = pytz.timezone("Asia/Singapore")
 
 def add_emojis(message):
     possible_weather_conditions = {
@@ -29,7 +31,7 @@ class ApiManager:
             "include": [],
         }
 
-        self.current_time = dt.datetime.now()
+        self.current_time = dt.datetime.now(SINGAPORE_TZ)
         self.chosen_time_formatted = str(self.current_time).split(" ")[0] + "T" + str(self.current_time.hour) + ":00:00"
 
         self.api_endpoint = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{LAT},{LONG}"
