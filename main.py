@@ -1,6 +1,5 @@
 from bot_manager import Messenger
 from flask import Flask
-from threading import Thread
 import requests, os
 
 messenger = Messenger()
@@ -25,6 +24,6 @@ def test_telegram():
 # Start the bot with polling
 if __name__ == "__main__":
     print("Starting bot with polling...")
-    Thread(target=messenger.run()).start()
     # Start Flask app to satisfy Render's port requirement
     app.run(host="0.0.0.0", port=5000)
+    messenger.run()
