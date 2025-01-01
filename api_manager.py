@@ -50,17 +50,21 @@ class ApiManager:
         self.get_data()
         all_days = self.data["days"]
         current_day = all_days[0]
-        hours_today = current_day["hours"]
+        try:
+            hours_today = current_day["hours"]
+        except KeyError:
+            return "There seems to be a problem gathering weather data. Try again later."
 
-        precip_prob = [hour_dict["precipprob"] for hour_dict in hours_today if self.current_time.hour == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 1 == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 2 == int(hour_dict["datetime"].split(":")[0])]
-        # print(precip_prob)
-        mean_precip_prob = round(sum(precip_prob) / len(precip_prob), 1)
-        if mean_precip_prob > 80:
-            return f"🔴 It is highly likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %"
-        elif 50 <= mean_precip_prob < 80:
-            return f"🟡 It is likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %"
         else:
-            return f"🟢 It is unlikely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %"
+            precip_prob = [hour_dict["precipprob"] for hour_dict in hours_today if self.current_time.hour == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 1 == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 2 == int(hour_dict["datetime"].split(":")[0])]
+            # print(precip_prob)
+            mean_precip_prob = round(sum(precip_prob) / len(precip_prob), 1)
+            if mean_precip_prob > 80:
+                return f"🔴 It is highly likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %"
+            elif 50 <= mean_precip_prob < 80:
+                return f"🟡 It is likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %"
+            else:
+                return f"🟢 It is unlikely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %"
 
     def get_daily_forecast_data(self):
         self.get_data()
@@ -98,4 +102,5 @@ class ApiManager:
         result = "\n".join(message)
         return result
 
-# api_manager = ApiManager()
+api_manager = ApiManager()
+print(api_manager.get_rain_prob_data())
