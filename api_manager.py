@@ -43,7 +43,7 @@ class ApiManager:
 
     def get_data(self):
         """Updates the data again."""
-        self.current_time = dt.datetime.now() # updates the current time
+        self.current_time = dt.datetime.now(SINGAPORE_TZ) # updates the current time
         response = requests.get(
             url=self.api_endpoint,
             params=self.params)
