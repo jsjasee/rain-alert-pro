@@ -74,11 +74,15 @@ class ApiManager:
 
     def get_hourly_forecast_data(self):
         self.get_data()
-        hrly_weather_tdy_list = self.data["days"][0]["hours"]
-        messages = [f"{hour['datetime']}: {hour['conditions']}" for hour in hrly_weather_tdy_list]
-        emoji_messages = [add_emojis(message) for message in messages]
-        message_result = "\n".join(emoji_messages)
-        return message_result
+        try:
+            hrly_weather_tdy_list = self.data["days"][0]["hours"]
+        except KeyError:
+            return "There seems to be a problem gathering hourly data. Please try again later."
+        else:
+            messages = [f"{hour['datetime']}: {hour['conditions']}" for hour in hrly_weather_tdy_list]
+            emoji_messages = [add_emojis(message) for message in messages]
+            message_result = "\n".join(emoji_messages)
+            return message_result
 
     def get_chosen_date_data(self, user_input_date):
         """only works for a 15 day period starting from current date. user_input_date must follow the format YYYY-MM-DD"""
@@ -87,11 +91,15 @@ class ApiManager:
 
         for day in self.data['days']:
             if day['datetime'] == user_input_date:
-                messages = [f"{hour['datetime']}: {hour['conditions']}" for hour in day['hours']]
-                emoji_messages = [add_emojis(message) for message in messages]
-                message_result = "\n".join(emoji_messages)
-                overall_result = f"Overall condition: {add_emojis(day['conditions'])}\nDescription: {add_emojis(day['description'])}\n"
-                return overall_result + message_result
+                try:
+                    messages = [f"{hour['datetime']}: {hour['conditions']}" for hour in day['hours']]
+                except KeyError:
+                    return "There seems to be a problem gathering hourly data. Please try again later."
+                else:
+                    emoji_messages = [add_emojis(message) for message in messages]
+                    message_result = "\n".join(emoji_messages)
+                    overall_result = f"Overall condition: {add_emojis(day['conditions'])}\nDescription: {add_emojis(day['description'])}\n"
+                    return overall_result + message_result
         return ("No match found. Date must be within 15 day period starting from today. "
                 "Try re-entering date using the specified format of YYYY-MM-DD")
 
