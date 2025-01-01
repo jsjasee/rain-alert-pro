@@ -26,7 +26,7 @@ class ApiManager:
 
         self.params = {
             "key": API_KEY,
-            "include": "",
+            "include": [],
         }
 
         self.current_time = dt.datetime.now()
@@ -35,6 +35,9 @@ class ApiManager:
         self.api_endpoint = f"https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/{LAT},{LONG}/{self.chosen_time_formatted}"
 
         self.data = self.get_data()
+
+    def reset_params(self):
+        self.params['include'] = []
 
     def get_data(self):
         """Updates the data again."""
@@ -46,14 +49,14 @@ class ApiManager:
         return response.json()
 
     def get_rain_prob_data(self):
+        self.reset_params()  # IF PREVIOUS FUNCTIONS WERE CALLED WHICH REQUIRED MODIFICATION OF PARAMS eg. checking daily weather, this resets the CURRENT params!
         self.current_time = dt.datetime.now()
         self.get_data()
-        all_days = self.data["days"]
-        current_day = all_days[0]
+        current_day = self.data["days"][0]
         try:
-            hours_today = current_day["hours"]
+            hours_today = current_day['hours']
         except KeyError:
-            return "There seems to be a problem gathering weather data. Try again later."
+            return "There seems to be a problem gathering weather data. Try resetting the params using /reset_params."
 
         else:
             precip_prob = [hour_dict["precipprob"] for hour_dict in hours_today if self.current_time.hour == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 1 == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 2 == int(hour_dict["datetime"].split(":")[0])]
@@ -67,12 +70,14 @@ class ApiManager:
                 return f"🟢 It is unlikely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %"
 
     def get_daily_forecast_data(self):
+        self.reset_params()
         self.get_data()
         condition_today = self.data["days"][0]["conditions"]
         desc_today = self.data["days"][0]["description"]
         return f"Today's weather: {add_emojis(condition_today)}. {add_emojis(desc_today)}"
 
     def get_hourly_forecast_data(self):
+        self.reset_params()
         self.get_data()
         try:
             hrly_weather_tdy_list = self.data["days"][0]["hours"]
@@ -86,6 +91,7 @@ class ApiManager:
 
     def get_chosen_date_data(self, user_input_date):
         """only works for a 15 day period starting from current date. user_input_date must follow the format YYYY-MM-DD"""
+        self.reset_params()
         self.chosen_time_formatted = user_input_date
         self.get_data()
 
@@ -104,10 +110,11 @@ class ApiManager:
                 "Try re-entering date using the specified format of YYYY-MM-DD")
 
     def get_15_days_data(self):
-        self.params["include"] = "days"
+        self.params["include"] = ["days"]
         self.get_data()
         message = [f"{add_emojis(day['datetime'])}: {add_emojis(day['conditions'])}. {add_emojis(day['description'])}" for day in self.data['days']]
         result = "\n".join(message)
+        self.reset_params()
         return result
 
 # api_manager = ApiManager()

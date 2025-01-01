@@ -20,6 +20,7 @@ class Messenger:
         self.bot.message_handler(commands=['specified_forecast'])(self.specified_forecast)
         self.bot.message_handler(func=self.check_condition)(self.send_specified_forecast)
         self.bot.message_handler(commands=['fifteen_days_forecast'])(self.fifteen_days_forecast)
+        self.bot.message_handler(commands=['reset_params'])(self.reset_params)
         # self.bot.polling()
         # this polling will block Flask because both Flask (serving your web app) and bot.polling() (listening for Telegram updates)
         # run in the same thread by default unless you explicitly use threading. Hence the polling must be run on a separate thread for webapp to run successfully.
@@ -27,8 +28,9 @@ class Messenger:
     def run(self):
         self.bot.polling()
 
-    def send_message(self, msg):
-        self.bot.send_message(chat_id=msg.chat.id, text=msg)
+    def reset_params(self, message):
+        api_manager.reset_params()
+        self.bot.send_message(chat_id=message.chat.id, text="API parameters are reset.")
 
     def say_hello(self, message):
         print(f"Handler triggered for /start: Chat ID = {message.chat.id}")  # Add logging
