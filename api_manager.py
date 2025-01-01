@@ -62,11 +62,11 @@ class ApiManager:
             precip_prob = [hour_dict["precipprob"] for hour_dict in hours_today if self.current_time.hour == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 1 == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 2 == int(hour_dict["datetime"].split(":")[0])]
             mean_precip_prob = round(sum(precip_prob) / len(precip_prob), 1)
             if mean_precip_prob > 80:
-                return f"🔴 It is highly likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob} "
+                return f"🔴 It is highly likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}, {hours_today} "
             elif 50 <= mean_precip_prob < 80:
-                return f"🟡 It is likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}"
+                return f"🟡 It is likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}, {hours_today}"
             else:
-                return f"🟢 It is unlikely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}"
+                return f"🟢 It is unlikely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}, {hours_today}"
 
     def get_daily_forecast_data(self):
         self.reset_params()
