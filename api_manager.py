@@ -110,5 +110,4 @@ class ApiManager:
         result = "\n".join(message)
         return result
 
-api_manager = ApiManager()
-print(api_manager.get_rain_prob_data())
+# api_manager = ApiManager()
