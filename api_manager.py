@@ -57,21 +57,27 @@ class ApiManager:
         current_day = self.data["days"][0]
         try:
             hours_today = current_day['hours']
-            print(hours_today)
         except KeyError:
             return "There seems to be a problem gathering weather data. Try resetting the params using /reset_params."
 
         else:
-            precip_prob = [hour_dict["precipprob"] for hour_dict in hours_today if self.current_time.hour == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 1 == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 2 == int(hour_dict["datetime"].split(":")[0])]
+            list_of_hours = [self.current_time.hour, self.current_time.hour+1, self.current_time.hour+2]
+            precip_prob = []
+            for hour_dict in hours_today:
+                for hour in list_of_hours:
+                    if int(hour_dict["datetime"].split(":")[0]) == hour:
+                        precip_prob.append(hour_dict["precipprob"])
+
+            # precip_prob = [hour_dict["precipprob"] for hour_dict in hours_today if self.current_time.hour == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 1 == int(hour_dict["datetime"].split(":")[0]) or self.current_time.hour + 2 == int(hour_dict["datetime"].split(":")[0])]
             print(precip_prob)
             mean_precip_prob = round(sum(precip_prob) / len(precip_prob), 1)
             print(mean_precip_prob)
             if mean_precip_prob > 80:
-                return f"🔴 It is highly likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}"
+                return f"🔴 It is highly likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}. Hours searched: {list_of_hours} on {self.data['days'][0]['datetime']}"
             elif 50 <= mean_precip_prob < 80:
-                return f"🟡 It is likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}"
+                return f"🟡 It is likely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}. Hours searched: {list_of_hours} on {self.data['days'][0]['datetime']}"
             else:
-                return f"🟢 It is unlikely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}"
+                return f"🟢 It is unlikely to rain now and in the next 2 hours. Precip prob: {mean_precip_prob} %. Precip prob for next 2 hrs: {precip_prob}. Hours searched: {list_of_hours} on {self.data['days'][0]['datetime']}"
 
     def get_daily_forecast_data(self):
         self.reset_params()
