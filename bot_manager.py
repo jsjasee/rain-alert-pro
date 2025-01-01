@@ -2,6 +2,7 @@ from telebot import TeleBot
 from api_manager import ApiManager
 import os
 from dotenv import load_dotenv
+import time
 
 load_dotenv()
 TOKEN = os.getenv("TOKEN")
@@ -26,7 +27,12 @@ class Messenger:
         # run in the same thread by default unless you explicitly use threading. Hence the polling must be run on a separate thread for webapp to run successfully.
 
     def run(self):
-        self.bot.polling()
+        while True:
+            try:
+                self.bot.polling(non_stop=True, timeout=120)
+            except Exception as e:
+                print(f"Polling failed: {e}. Restarting in 5 seconds...")
+                time.sleep(5)
 
     def reset_params(self, message):
         api_manager.reset_params()

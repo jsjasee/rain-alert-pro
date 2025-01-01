@@ -25,6 +25,6 @@ def test_telegram():
 # Start the bot with polling
 if __name__ == "__main__":
     print("Starting bot with polling...")
-    Thread(target=lambda: messenger.bot.polling(non_stop=True)).start()
+    Thread(target=messenger.run()).start()
     # Start Flask app to satisfy Render's port requirement
     app.run(host="0.0.0.0", port=5000)
